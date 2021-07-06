@@ -57,7 +57,7 @@ module serialula
    reg [7:0]        bit_counter;
    wire             burst0;
    wire             burst1;
-   reg              found_one;
+   reg              found_zero;
 
    // =================================================
    // Control reguster
@@ -166,10 +166,10 @@ module serialula
 
          // Data recovery, make the data out decision on each edge
          if (cas_din_edge) begin
-            cas_din_recovered <= found_one ^ ctrl_reverse_tones;
-            found_one <= 1'b0;
+            cas_din_recovered <= (!found_zero) ^ ctrl_reverse_tones;
+            found_zero <= 1'b0;
          end else if (burst1) begin
-            found_one <= 1'b1;
+            found_zero <= 1'b1;
          end
       end
    end
