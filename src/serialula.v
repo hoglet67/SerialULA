@@ -43,6 +43,7 @@ module serialula
    reg              tx_clk;
    reg              rx_clk;
    wire [2:0]       sine_in;
+   reg [2:0]        burst_counter;
    reg [8:0]        high_tone_counter;
    reg              high_tone_detect;
    reg              txd_s;
@@ -140,8 +141,8 @@ module serialula
    // Cassette Data Seperator
    // =================================================
 
-   assign burst0 = bit_counter[7:3] == 5'b00001; // 13us after the edge
-   assign burst1 = bit_counter[7:3] == 5'b10100; // 260us after the edge
+   assign burst0 = (bit_counter == 8'h08); // 13us after the edge
+   assign burst1 = (bit_counter == 8'hA0); // 260us after the edge
 
    always @(posedge clk) begin
       if (clk_divider[0]) begin
@@ -154,8 +155,11 @@ module serialula
          end
 
          // Clock recovery, generate a burst of 4 clock pulses
-         if (burst0 || burst1) begin
-            cas_clk_recovered <= bit_counter[0];
+         if (burst0 || burst1 || |burst_counter) begin
+            burst_counter <= burst_counter + 1'b1;
+         end
+         if (|burst_counter) begin
+            cas_clk_recovered <= !burst_counter[0];
          end else begin
             cas_clk_recovered <= 1'b1;
          end
