@@ -13,7 +13,7 @@ module serialula
    // Interface to Cassette Port
    output           CasMotor,
    input            CasIn,
-   output reg [1:0] CasOut,
+   output [1:0]     CasOut,
 
    // Interface to ACIA
    output           TxC,
@@ -57,7 +57,9 @@ module serialula
    reg [7:0]        bit_counter;
    wire             burst0;
    wire             burst1;
-   reg              found_zero;
+   reg              is_long;
+   reg              is_long_last;
+   reg [1:0]        sine_out;
 
    // =================================================
    // Control reguster
@@ -164,12 +166,23 @@ module serialula
             cas_clk_recovered <= 1'b1;
          end
 
-         // Data recovery, make the data out decision on each edge
+         // Track the length of the last two gaps between edges
          if (cas_din_edge) begin
-            cas_din_recovered <= (!found_zero) ^ ctrl_reverse_tones;
-            found_zero <= 1'b0;
+            is_long <= 1'b0;
+            is_long_last <= is_long;
          end else if (burst1) begin
-            found_zero <= 1'b1;
+            is_long <= 1'b1;
+         end
+
+         // Data recovery, make the data decision on each edge
+         if (cas_din_edge) begin
+            if (is_long) begin
+               // last gap long: output a zero
+               cas_din_recovered <= ctrl_reverse_tones;
+               // last two gaps short: output a one
+            end else if (!is_long_last) begin
+               cas_din_recovered <= !ctrl_reverse_tones;
+            end
          end
       end
    end
@@ -220,17 +233,17 @@ module serialula
       end
       if (enable_s) begin
          case (sine_in)
-           3'b000: CasOut <= 2'b00;
-           3'b001: CasOut <= 2'b01;
-           3'b010: CasOut <= 2'b10;
-           3'b011: CasOut <= 2'b11;
-           3'b100: CasOut <= 2'b11;
-           3'b101: CasOut <= 2'b10;
-           3'b110: CasOut <= 2'b01;
-           3'b111: CasOut <= 2'b00;
+           3'b000: sine_out <= 2'b00;
+           3'b001: sine_out <= 2'b01;
+           3'b010: sine_out <= 2'b10;
+           3'b011: sine_out <= 2'b11;
+           3'b100: sine_out <= 2'b11;
+           3'b101: sine_out <= 2'b10;
+           3'b110: sine_out <= 2'b01;
+           3'b111: sine_out <= 2'b00;
          endcase
       end else begin
-         CasOut <= 2'b00;
+         sine_out <= 2'b00;
       end
    end
 
@@ -247,5 +260,7 @@ module serialula
    assign CTSO = ctrl_rs423_sel ? CTSI : 1'b0;
 
    assign CasMotor = ctrl_motor_on;
+   assign CasOut[1] = sine_out[1] ? 1'bZ : 1'b0;
+   assign CasOut[0] = sine_out[0] ? 1'bZ : 1'b0;
 
 endmodule
