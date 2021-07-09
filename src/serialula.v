@@ -149,7 +149,7 @@ module serialula
    always @(posedge clk) begin
       if (clk_divider[0]) begin
 
-         // Measure the interval between edges with an 8-bit saturating counter
+         // Measure the gap between edges with an 8-bit saturating counter
          if (cas_din_edge) begin
             bit_counter <= 0;
          end else if (!(&bit_counter)) begin
