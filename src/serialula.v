@@ -260,7 +260,6 @@ module serialula
    assign CTSO = ctrl_rs423_sel ? CTSI : 1'b0;
 
    assign CasMotor = ctrl_motor_on;
-   assign CasOut[1] = sine_out[1] ? 1'bZ : 1'b0;
-   assign CasOut[0] = sine_out[0] ? 1'bZ : 1'b0;
+   assign CasOut   = sine_out;
 
 endmodule

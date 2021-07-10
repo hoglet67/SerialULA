@@ -37,9 +37,14 @@ NET "TxC"       LOC="P9"  | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # 
 #NET "VCC"      LOC="P11" | IOSTANDARD = LVCMOS33                           ; # DIP pin 40
 
 
+NET "CasOut<0>" LOC="P65" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE =  8 ;
+NET "CasOut<1>" LOC="P67" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE =  8 ;
+#NET "CasOut<2>" LOC="P70" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ;
+#NET "CasOut<3>" LOC="P86" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ;
+
 # I/O's for test connector
-NET "CasOut<0>" LOC="P48" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # connector pin E2
-NET "CasOut<1>" LOC="P49" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # connector pin E3
+#NET ""         LOC="P48" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # connector pin E2
+#NET ""         LOC="P49" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # connector pin E3
 #NET ""         LOC="P27" | IOSTANDARD = LVCMOS33                           ; # connector pin E4
 #NET ""         LOC="P44" | IOSTANDARD = LVCMOS33                           ; # connector pin E5
 #NET ""         LOC="P50" | IOSTANDARD = LVCMOS33                           ; # connector pin E6
