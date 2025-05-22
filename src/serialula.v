@@ -222,7 +222,7 @@ module serialula
 
    always @(posedge clk) begin
       if (&clk_divider[7:0]) begin
-         if (!cas_din_recovered) begin
+         if (!cas_din_recovered || !ctrl_motor_on) begin
             high_tone_counter <= 0;
          end else if (!(&high_tone_counter)) begin
             high_tone_counter <= high_tone_counter + 1;
