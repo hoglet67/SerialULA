@@ -1,9 +1,24 @@
-`define HIGH_TONE_THRESHOLD 445
+
+`define MODEL_FERRANTI
+//`define MODEL_VLSI
+//`define MODEL_JUMPERED
+
+`define HIGH_TONE_THRESHOLD_VLSI     962
+`define HIGH_TONE_THRESHOLD_FERRANTI 445
+
+`ifdef MODEL_FERRANTI
+`define HIGH_TONE_BITS 9
+`else
+`define HIGH_TONE_BITS 10
+`endif
 
 module serialula
   (
    // Fast clock (16/13 MHz)
    input            clk,
+
+   // Mode Jumper (used to enable VLSI_SERPROC mode)
+   input            jp1,   // off/1=Ferranti on/0=VLSI
 
    // Interface to 6502
    input            E,
@@ -31,11 +46,21 @@ module serialula
    output           RTSO
    );
 
+`ifdef MODEL_FERRANTI
+   wire         vlsi_mode = 1'b0;
+`endif
+`ifdef MODEL_VLSI
+   wire         vlsi_mode = 1'b1;
+`endif
+`ifdef MODEL_JUMPERED
+   wire         vlsi_mode = !jp1;
+`endif
+
    reg [7:0]        control;
 
    wire [2:0]       ctrl_tx_baud       = control[2:0];
    wire [2:0]       ctrl_rx_baud       = control[5:3];
-   wire             ctrl_reverse_tones = control[3];
+   wire             ctrl_reverse_tones = control[3] & vlsi_mode;
    wire             ctrl_rs423_sel     = control[6];
    wire             ctrl_motor_on      = control[7];
 
@@ -44,7 +69,8 @@ module serialula
    reg              rx_clk;
    wire [2:0]       sine_in;
    reg [2:0]        burst_counter;
-   reg [8:0]        high_tone_counter;
+   reg [`HIGH_TONE_BITS-1:0] high_tone_counter;
+   wire [`HIGH_TONE_BITS-1:0] high_tone_threshold;
    reg              high_tone_detect;
    reg              txd_s;
    reg              enable_s;
@@ -191,6 +217,9 @@ module serialula
    // High Tone Run-in Detect
    // =================================================
 
+   assign high_tone_threshold = vlsi_mode ? `HIGH_TONE_THRESHOLD_VLSI :
+                                `HIGH_TONE_THRESHOLD_FERRANTI;
+
    always @(posedge clk) begin
       if (&clk_divider[7:0]) begin
          if (!cas_din_recovered) begin
@@ -198,7 +227,7 @@ module serialula
          end else if (!(&high_tone_counter)) begin
             high_tone_counter <= high_tone_counter + 1;
          end
-         high_tone_detect <= (high_tone_counter == `HIGH_TONE_THRESHOLD);
+         high_tone_detect <= (high_tone_counter == high_tone_threshold);
       end
    end
 

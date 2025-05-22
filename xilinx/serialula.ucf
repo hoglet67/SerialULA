@@ -6,6 +6,8 @@ NET "E" TNM_NET = clk_period_grp_e;
 
 NET "E" CLOCK_DEDICATED_ROUTE = FALSE;
 
+NET "JP1"       LOC="P16"                ;
+
 NET "Data<0>"   LOC="P39"                ; # DIP pin 1
 NET "Data<1>"   LOC="P40"                ; # DIP pin 2
 NET "Data<2>"   LOC="P41"                ; # DIP pin 3
