@@ -251,13 +251,13 @@ module serialula
    // Output Multiplexers
    // =================================================
 
-   assign Dout = TxD;
+   assign Dout = !TxD;
    assign TxC  = tx_clk;
    assign DCD  = ctrl_rs423_sel ? 1'b0 : high_tone_detect;
    assign RxC  = ctrl_rs423_sel ? rx_clk : cas_clk_recovered;
-   assign RxD  = ctrl_rs423_sel ? Din : cas_din_recovered;
-   assign RTSO = ctrl_rs423_sel ? RTSI : 1'b1;
-   assign CTSO = ctrl_rs423_sel ? CTSI : 1'b0;
+   assign RxD  = ctrl_rs423_sel ? !Din : cas_din_recovered;
+   assign RTSO = ctrl_rs423_sel ? !RTSI : 1'b0;
+   assign CTSO = ctrl_rs423_sel ? !CTSI : 1'b0;
 
    assign CasMotor = ctrl_motor_on;
    assign CasOut[1] = sine_out[1] ? 1'bZ : 1'b0;
