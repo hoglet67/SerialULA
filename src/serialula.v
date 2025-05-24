@@ -1,3 +1,6 @@
+`define BOARD_REV_01
+//`define BOARD_REV_02
+
 
 `define MODEL_FERRANTI
 //`define MODEL_VLSI
@@ -85,7 +88,6 @@ module serialula
    wire             burst1;
    reg              is_long;
    reg              is_long_last;
-   reg [1:0]        sine_out;
 
    // =================================================
    // Control reguster
@@ -235,7 +237,7 @@ module serialula
    // Sine Wave Synthesis
    // =================================================
 
-   // Produces 4 discrete levels:
+   // The Ferranti Serial ULA produces 4 discrete levels:
    //
    //               1200Hz 2400Hz
    // 00: 2.95V for 208us  104us
@@ -255,26 +257,65 @@ module serialula
 
    always @(posedge clk) begin
       // Sample TxD and Enable once per bit period
-      // TODO: does this needs to be better synchronised?
       if (&clk_divider[9:0]) begin
          txd_s <= TxD ^ ctrl_reverse_tones;
          enable_s <= !ctrl_rs423_sel & !RTSI;
       end
-      if (enable_s) begin
-         case (sine_in)
-           3'b000: sine_out <= 2'b00;
-           3'b001: sine_out <= 2'b01;
-           3'b010: sine_out <= 2'b10;
-           3'b011: sine_out <= 2'b11;
-           3'b100: sine_out <= 2'b11;
-           3'b101: sine_out <= 2'b10;
-           3'b110: sine_out <= 2'b01;
-           3'b111: sine_out <= 2'b00;
-         endcase
-      end else begin
-         sine_out <= 2'b00;
-      end
    end
+
+   // Note: the polarity doesn't matter (the Ferranti and
+   // VLSI parts actually have opposite polarities).
+   //
+   // Note: bit transitions (between low and high tones)
+   // should happen at the zero crossings.
+   //         V                                V
+   //                             +-------+
+   //                             |       |
+   //                         +---+       +---+
+   //                         |               |
+   //                         |               |
+   //                         |               |
+   //         |               |
+   //         |               |
+   //         |               |
+   //         +---+       +---+
+   //             |       |
+   //             +-------+
+   //
+   // Sine_in |000|001|010|011|100|101|110|111|
+
+`ifdef BOARD_REV_01
+
+   // Note: this change fixes a 90 degree phase shift error
+   // in previous commits.
+   //
+   // Uses open drain drivers and a pullup (R1) to 5V
+   //
+   // Sine_in |000|001|010|011|100|101|110|111|
+   // CasOut1 | 0 | 0 | 0 | 0 | Z | Z | Z | Z | (Pin 37 = 1K8)
+   // CasOut0 | Z | 0 | 0 | Z | 0 | Z | Z | 0 | (Pin 38 = 10K)
+   //
+   // Output 00 when !enable_s so CasOut sits at lowest voltage
+
+   assign CasOut[1] = (enable_s &    sine_in[2]   ) ? 1'bZ : 1'b0;
+   assign CasOut[0] = (enable_s & !(^sine_in[2:0])) ? 1'bZ : 1'b0;
+
+`endif
+
+`ifdef BOARD_REV_02
+
+   // Uses push-pull drivers and a bias voltage of 1.65V
+   //
+   // Sine_in |000|001|010|011|100|101|110|111|
+   // CasOut1 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 1 | (Pin 37 = 1K8)
+   // CasOut0 | Z | 0 | 0 | Z | Z | 1 | 1 | Z | (Pin 38 = 510R)
+   //
+   // Output ZZ when !enable_s so CasOut sits at 1.65V
+
+   assign CasOut[1] = (enable_s                  ) ? sine_in[2] : 1'bZ;
+   assign CasOut[0] = (enable_s & (^sine_in[1:0])) ? sine_in[2] : 1'bZ;
+
+`endif
 
    // =================================================
    // Output Multiplexers
@@ -287,9 +328,6 @@ module serialula
    assign RxD  = ctrl_rs423_sel ? !Din : cas_din_recovered;
    assign RTSO = ctrl_rs423_sel ? !RTSI : 1'b0;
    assign CTSO = ctrl_rs423_sel ? !CTSI : 1'b0;
-
    assign CasMotor = ctrl_motor_on;
-   assign CasOut[1] = sine_out[1] ? 1'bZ : 1'b0;
-   assign CasOut[0] = sine_out[0] ? 1'bZ : 1'b0;
 
 endmodule
