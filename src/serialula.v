@@ -1,5 +1,5 @@
-`define BOARD_REV_01
-//`define BOARD_REV_02
+//`define BOARD_REV_01
+`define BOARD_REV_02
 
 
 `define MODEL_FERRANTI
@@ -312,8 +312,21 @@ module serialula
    //
    // Output ZZ when !enable_s so CasOut sits at 1.65V
 
+   // Correct Sine
    assign CasOut[1] = (enable_s                  ) ? sine_in[2] : 1'bZ;
    assign CasOut[0] = (enable_s & (^sine_in[1:0])) ? sine_in[2] : 1'bZ;
+
+   // Correct Square
+   //   assign CasOut[1] = (enable_s                  ) ? sine_in[2] : 1'bZ;
+   //   assign CasOut[0] = (enable_s                  ) ? sine_in[2] : 1'bZ;
+
+   // Phase shifted sine
+   //   assign CasOut[1] = (enable_s                   ) ? (^sine_in[2:1]) : 1'bZ;
+   //   assign CasOut[0] = (enable_s & !(^sine_in[1:0])) ? (^sine_in[2:1]) : 1'bZ;
+
+   // Phase shifted square
+   // assign CasOut[1] = (enable_s                   ) ? (^sine_in[2:1]) : 1'bZ;
+   // assign CasOut[0] = (enable_s                   ) ? (^sine_in[2:1]) : 1'bZ;
 
 `endif
 
