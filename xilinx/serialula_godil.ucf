@@ -1,0 +1,52 @@
+NET "Clk" TNM_NET = clk_period_grp_clk;
+TIMESPEC TS_clk_period_clk = PERIOD "clk_period_grp_clk" 812.5ns HIGH;
+
+NET "E" TNM_NET = clk_period_grp_e;
+TIMESPEC TS_clk_period_e = PERIOD "clk_period_grp_e" 500ns HIGH;
+
+NET "E" CLOCK_DEDICATED_ROUTE = FALSE;
+
+NET "Data<0>"   LOC="P16" | IOSTANDARD = LVCMOS33                           ; # DIP pin 1
+NET "Data<1>"   LOC="P95" | IOSTANDARD = LVCMOS33                           ; # DIP pin 2
+NET "Data<2>"   LOC="P18" | IOSTANDARD = LVCMOS33                           ; # DIP pin 3
+NET "Data<3>"   LOC="P17" | IOSTANDARD = LVCMOS33                           ; # DIP pin 4
+NET "Data<4>"   LOC="P94" | IOSTANDARD = LVCMOS33                           ; # DIP pin 5
+NET "Data<5>"   LOC="P22" | IOSTANDARD = LVCMOS33                           ; # DIP pin 6
+NET "Data<6>"   LOC="P23" | IOSTANDARD = LVCMOS33                           ; # DIP pin 7
+NET "Data<7>"   LOC="P33" | IOSTANDARD = LVCMOS33                           ; # DIP pin 8
+NET "nCS"       LOC="P32" | IOSTANDARD = LVCMOS33                           ; # DIP pin 9
+NET "E"         LOC="P34" | IOSTANDARD = LVCMOS33                           ; # DIP pin 10
+NET "CasMotor"  LOC="P40" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # DIP pin 11
+NET "CasIn"     LOC="P41" | IOSTANDARD = LVCMOS33                           ; # DIP pin 12
+NET "DCD"       LOC="P36" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # DIP pin 13
+# NET "GND"     LOC="P35" | IOSTANDARD = LVCMOS33                           ; # DIP pin 14
+
+#NET "CR"       LOC="P83" | IOSTANDARD = LVCMOS33                           ; # DIP pin 27
+NET "Din"       LOC="P78" | IOSTANDARD = LVCMOS33                           ; # DIP pin 28
+NET "RxD"       LOC="P79" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # DIP pin 29
+NET "RxC"       LOC="P85" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # DIP pin 30
+NET "CTSO"      LOC="P92" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # DIP pin 31
+NET "CTSI"      LOC="P98" | IOSTANDARD = LVCMOS33                           ; # DIP pin 32
+NET "Dout"      LOC="P3"  | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # DIP pin 33
+NET "TxD"       LOC="P2"  | IOSTANDARD = LVCMOS33                           ; # DIP pin 34
+NET "RTSO"      LOC="P4"  | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # DIP pin 35
+NET "RTSI"      LOC="P5"  | IOSTANDARD = LVCMOS33                           ; # DIP pin 36
+NET "Clk"       LOC="P90" | IOSTANDARD = LVCMOS33                           ; # DIP pin 37
+NET "TxC"       LOC="P9"  | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # DIP pin 38
+#NET "CasOut"   LOC="P10" | IOSTANDARD = LVCMOS33                           ; # DIP pin 39
+#NET "VCC"      LOC="P11" | IOSTANDARD = LVCMOS33                           ; # DIP pin 40
+
+
+NET "CasOut<0>" LOC="P65" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ;
+NET "CasOut<1>" LOC="P67" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ;
+NET "CasOut<2>" LOC="P70" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ;
+#NET "CasOut<3>" LOC="P86" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ;
+
+# I/O's for test connector
+#NET ""         LOC="P48" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # connector pin E2
+#NET ""         LOC="P49" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8 ; # connector pin E3
+#NET ""         LOC="P27" | IOSTANDARD = LVCMOS33                           ; # connector pin E4
+#NET ""         LOC="P44" | IOSTANDARD = LVCMOS33                           ; # connector pin E5
+#NET ""         LOC="P50" | IOSTANDARD = LVCMOS33                           ; # connector pin E6
+#NET ""         LOC="P42" | IOSTANDARD = LVCMOS33                           ; # connector pin E7
+#NET ""         LOC="P99" | IOSTANDARD = LVCMOS33                           ; # connector pin E8

@@ -1,5 +1,6 @@
 `define BOARD_REV_01
 //`define BOARD_REV_02
+//`define BOARD_GODIL
 
 
 `define MODEL_FERRANTI
@@ -31,7 +32,11 @@ module serialula
    // Interface to Cassette Port
    output           CasMotor,
    input            CasIn,
+`ifdef BOARD_GODIL
+   output [2:0]     CasOut,
+`else
    output [1:0]     CasOut,
+`endif
 
    // Interface to ACIA
    output           TxC,
@@ -312,8 +317,40 @@ module serialula
    //
    // Output ZZ when !enable_s so CasOut sits at 1.65V
 
+   // Normal phase sine wave
    assign CasOut[1] = (enable_s                  ) ? sine_in[2] : 1'bZ;
    assign CasOut[0] = (enable_s & (^sine_in[1:0])) ? sine_in[2] : 1'bZ;
+
+   // Normal phase square wave
+   // assign CasOut[1] = (enable_s                  ) ? sine_in[2] : 1'bZ;
+   // assign CasOut[0] = (enable_s                  ) ? sine_in[2] : 1'bZ;
+
+   // Phase shifted sine wave
+   // assign CasOut[1] = (enable_s                   ) ? (^sine_in[2:1]) : 1'bZ;
+   // assign CasOut[0] = (enable_s & !(^sine_in[1:0])) ? (^sine_in[2:1]) : 1'bZ;
+
+   // Phase shifted square wave
+   // assign CasOut[1] = (enable_s                   ) ? (^sine_in[2:1]) : 1'bZ;
+   // assign CasOut[0] = (enable_s                   ) ? (^sine_in[2:1]) : 1'bZ;
+
+`endif
+
+
+`ifdef BOARD_GODIL
+
+   // Uses three open connector drivers with diodes and variable resistors
+   //
+   // Sine_in |000|001|010|011|100|101|110|111|
+   // CasOut2 | Z | Z | Z | Z | 0 | Z | Z | 0 | (Pin 70 = 10K Variable) [ Intermediate high ]
+   // CasOut1 | 0 | Z | Z | 0 | Z | Z | Z | Z | (Pin 67 = 4K7 Variable) [ Intermediate low ]
+   // CasOut0 | Z | 0 | 0 | Z | Z | Z | Z | Z | (Pin 65 = 1K0 Variable) [ Peak low ]
+   // CasOut/Common                           | (Pin 10 = 4K7 Variable) [ Peak high ]
+   //
+   // Output ZZ when !enable_s so CasOut goes high
+
+   assign CasOut[2] = enable_s && (sine_in == 3'b100 || sine_in == 3'b111) ? 1'b0 : 1'bZ;
+   assign CasOut[1] = enable_s && (sine_in == 3'b000 || sine_in == 3'b011) ? 1'b0 : 1'bZ;
+   assign CasOut[0] = enable_s && (sine_in == 3'b001 || sine_in == 3'b010) ? 1'b0 : 1'bZ;
 
 `endif
 
