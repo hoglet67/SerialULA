@@ -246,7 +246,7 @@ begin
     -- =================================================
 
     burst0 <= '1' when bit_counter = x"08" else '0';  -- 13us after the edge
-    burst1 <= '1' when bit_counter = x"B0" else '0';  -- 260us after the edge
+    burst1 <= '1' when bit_counter = x"B0" else '0';  -- 286us after the edge
 
     process(clk)
     begin

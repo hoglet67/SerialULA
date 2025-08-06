@@ -177,7 +177,7 @@ module serialula
    // =================================================
 
    assign burst0 = (bit_counter == 8'h08); // 13us after the edge
-   assign burst1 = (bit_counter == 8'hB0); // 260us after the edge
+   assign burst1 = (bit_counter == 8'hB0); // 286us after the edge
 
    always @(posedge clk) begin
       if (clk_divider[0]) begin
